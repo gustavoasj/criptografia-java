@@ -24,7 +24,7 @@ import javax.swing.JLabel;
 
 /**
  *
- * @author Thales
+ * @author Thales e Gustavo
  */
 public class Main {
 
@@ -55,7 +55,7 @@ public class Main {
     public static String toCompleteBinary(String binary, int length) {
         while (binary.length() < length) {
             binary = "0" + binary;
-        }
+        } 
         return binary;
     }
     
@@ -66,7 +66,7 @@ public class Main {
         String[] b = new String[input.length];
         String[] d = new String[input.length];
 
-        printArray(input, input.length, 0, "TO ENCRYPT");
+        //printArray(input, input.length, 0, "TO ENCRYPT");
 
         for (int i = 0; i < input.length; i++) {
             b[i] = "00000000";
@@ -77,7 +77,7 @@ public class Main {
         for (int i = 0; i < input.length; i++) {
             inputx[i] = toCompleteBinary(Integer.toBinaryString(input[i]), 8);
         }
-
+        //Geração da sequencia caotica
         int l = inputx.length;
         double mu = 3.9;
         x[0] = 0.75;
@@ -109,6 +109,7 @@ public class Main {
         }
         //printArray(b,b.length,1,"B");
         
+        //rede neural
         double[] teta = new double[8];
         Integer[][] weights = new Integer[8][8];
         for (int c = 0; c < input.length; c++) {
@@ -151,7 +152,8 @@ public class Main {
             }
         }
         //printArray(d, d.length, 1, "D");
-        printArray(crypt, crypt.length, l, "ENCRYPTED");
+        //printArray(crypt, crypt.length, l, "ENCRYPTED");
+       
     }
 
 
@@ -171,8 +173,10 @@ public class Main {
         try{
         	//Carrega a imagem
         	BufferedImage originalImage = 
-                                      ImageIO.read(new File("/Users/gustavoasj/Documents/workspace/criptografia/src/criptografia/bird_small.png"));
+                                      ImageIO.read(new File("/Users/gustavoasj/Documents/workspace/criptografia/src/criptografia/lena256.png"));
          
+        	int width          = originalImage.getWidth();
+        	int height         = originalImage.getHeight();
         	
         	// Usando um label para mostrar a imagem
             JFrame frame = new JFrame();
@@ -182,7 +186,7 @@ public class Main {
             frame.setVisible(true);
         	
         	
-        	// convert BufferedImage to byte array
+        	// Converte BufferedImage to byte array
         	ByteArrayOutputStream baos = new ByteArrayOutputStream();
         	ImageIO.write( originalImage, "png", baos );
         	baos.flush();
@@ -196,6 +200,7 @@ public class Main {
         	int inpt = 0;
         	Integer[] inputt = new Integer[imageInByte.length];
         	Integer[] cryptt = new Integer[imageInByte.length];
+        	Integer[] outputt = new Integer[imageInByte.length];
         	
         	for (int l=0; l<inputt.length;l++){
         		inpt = (int) imageInByte[l] & 0xFF ;
@@ -215,22 +220,20 @@ public class Main {
         	System.out.println("");
         	
             //Decrypt
-            encrypt(cryptt, inputt);
+            encrypt(cryptt, outputt);
             
-            for (int l=0; l<inputt.length;l++){
-            	inpt = inputt[l];
+            for (int l=0; l<outputt.length;l++){
+            	inpt = outputt[l];
                 byte b = (byte) inpt;
                 saida[l] = b;
         	}
             
-            /****--------------- Imagem encriptada ---------------****/
+            /*--------------- Imagem encriptada ---------------*/
             //Cria a imagem encriptada
-        	int width = 120;
-        	int height = 120;
 
         	DataBuffer buffer = new DataBufferByte(encripted, encripted.length);
         	//3 bytes per pixel: red, green, blue
-        	WritableRaster raster = Raster.createInterleavedRaster(buffer, width, height, 3 * width, 3, new int[] {0, 1, 2}, (Point)null);
+        	WritableRaster raster = Raster.createInterleavedRaster(buffer, width, height, 2 * width, 2, new int[] {0, 1, 2}, (Point)null);
         	ColorModel cm = new ComponentColorModel(ColorModel.getRGBdefault().getColorSpace(), false, true, Transparency.OPAQUE, DataBuffer.TYPE_BYTE); 
         	BufferedImage im = new BufferedImage(cm, raster, true, null);
 
@@ -246,8 +249,8 @@ public class Main {
             /*--------------------------------------------*/
             
             
-            /****--------------- Imagem de saida ---------------****/
-            // convert byte array back to BufferedImage
+            /*--------------- Imagem de saida ---------------*/
+            // Converte byte array para BufferedImage
         	InputStream in2 = new ByteArrayInputStream(saida);
         	BufferedImage bImageFromConvert2 = ImageIO.read(in2);
         	ImageIO.write(bImageFromConvert2, "png", new File(
@@ -263,6 +266,7 @@ public class Main {
             frame2.setVisible(true);
             /*--------------------------------------------*/
             
+            System.out.println("Finalizou com sucesso");
         	}catch(IOException e){
         		System.out.println(e.getMessage());
         	}
